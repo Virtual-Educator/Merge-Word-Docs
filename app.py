@@ -5,6 +5,7 @@ import os
 import tempfile
 from io import BytesIO
 
+# Function to combine Word documents
 def combine_word_documents(docs):
     combined_doc = Document()
     for doc in docs:
@@ -13,6 +14,7 @@ def combine_word_documents(docs):
             combined_doc.element.body.append(element)
     return combined_doc
 
+# Function to process Word files from a ZIP
 def process_zip_file(zip_file):
     with ZipFile(zip_file, 'r') as z:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -36,32 +38,39 @@ def process_zip_file(zip_file):
 
             return word_docs, error_occurred
 
+# Function to process direct Word file uploads
 def process_word_files(word_files):
     return [file.getvalue() for file in word_files]
 
+# Initialize session state variables
+if 'combined_document' not in st.session_state:
+    st.session_state['combined_document'] = None
+
+# Streamlit UI
 st.title('Word Document Combiner')
 
 upload_choice = st.radio("Choose your upload method", ('Zip File', 'Word Files'))
-combined_document = None
 
 if upload_choice == 'Zip File':
     uploaded_file = st.file_uploader("Upload ZIP file", type=['zip'])
     if st.button('Combine Documents from ZIP') and uploaded_file:
         word_docs, error_occurred = process_zip_file(uploaded_file)
         if word_docs and not error_occurred:
-            combined_document = combine_word_documents(word_docs)
+            st.session_state['combined_document'] = combine_word_documents(word_docs)
 
 elif upload_choice == 'Word Files':
     uploaded_files = st.file_uploader("Upload Word files", accept_multiple_files=True, type=['docx'])
     if st.button('Combine Word Documents') and uploaded_files:
         word_docs = process_word_files(uploaded_files)
-        combined_document = combine_word_documents(word_docs)
+        st.session_state['combined_document'] = combine_word_documents(word_docs)
 
-if combined_document:
+# Export options
+if st.session_state['combined_document']:
     export_format = st.selectbox("Select export format", ("Word", "PDF", "Text"))
 
     if st.button('Export Combined Document'):
         file_stream = BytesIO()
+        combined_document = st.session_state['combined_document']
         combined_document.save(file_stream)
         file_stream.seek(0)
 
