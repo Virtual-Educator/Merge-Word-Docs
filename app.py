@@ -92,3 +92,43 @@ if st.session_state['combined_document']:
                                data=text_stream,
                                file_name="combined_document.txt",
                                mime="text/plain")
+st.markdown("""
+## **Word Document Combiner User Guide**
+
+## **What is Word Document Combiner?**
+
+Word Document Combiner is an easy-to-use tool that helps you merge multiple Microsoft Word documents into one. Whether you have a bunch of chapters, sections, or separate documents that you want to put together, this app makes it simple.
+
+## **How to Use the App**
+
+### **Getting Started**
+
+*   You don’t need to install anything on your computer. The app runs in a web browser.
+*   Make sure you have all your Word documents ready. You can have them as separate files or put together in a ZIP file.
+
+### **Combining Your Documents**
+
+1.  **Open the App**: Go to the web link where the Word Document Combiner is hosted.
+2.  **Choose Your Upload Method**:
+    *   If your documents are in a ZIP file, select the 'Zip File' option.
+    *   If you have individual Word files, select the 'Word Files' option.
+3.  **Upload Your Files**: Click on the upload area to select files from your computer, or drag and drop them into the box.
+4.  **Combine Your Documents**:
+    *   If you uploaded a ZIP file, click ‘Combine Documents from ZIP’.
+    *   If you uploaded Word files, click ‘Combine Word Documents’.
+5.  **Wait for the Process to Complete**: The app will merge your documents and let you know when it's done.
+
+### **Downloading Your Combined Document**
+
+*   Once your documents are combined, you can choose how you want to download the combined document. You can download it as a Word document, a PDF, or a text file.
+*   Click on the download button for the format you want, and the file will be saved to your computer.
+
+### **Troubleshooting**
+
+*   If you get an error message or something doesn’t work, check to make sure that you’re uploading the right type of file (.docx or .zip).
+*   If there are more than one Word document in a folder within your ZIP file, the app will only combine the first one it finds.
+
+## **Need Help?**
+
+If you have any questions or need help using the app, don’t hesitate to reach out for support.
+""")
