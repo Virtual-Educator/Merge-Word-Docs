@@ -48,6 +48,7 @@ if 'combined_document' not in st.session_state:
 
 # Streamlit UI
 st.title('Word Document Combiner')
+st.subtitle('Word Document Combiner is an easy-to-use tool that helps you merge multiple Microsoft Word documents into one. Whether you have a bunch of chapters, sections, or separate documents that you want to put together, this app makes it simple.')
 
 upload_choice = st.radio("Choose your upload method", ('Zip File', 'Word Files'))
 
@@ -93,11 +94,6 @@ if st.session_state['combined_document']:
                                file_name="combined_document.txt",
                                mime="text/plain")
 st.markdown("""
-## **Word Document Combiner User Guide**
-
-## **What is Word Document Combiner?**
-
-Word Document Combiner is an easy-to-use tool that helps you merge multiple Microsoft Word documents into one. Whether you have a bunch of chapters, sections, or separate documents that you want to put together, this app makes it simple.
 
 ## **How to Use the App**
 
