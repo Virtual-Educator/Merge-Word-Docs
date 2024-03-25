@@ -17,13 +17,12 @@ def combine_word_documents(docs):
 
 # Function to convert PDF to Word document
 def convert_pdf_to_word(pdf_bytes):
-    # Convert PDF bytes to a Word file
     output = BytesIO()
-    converter = Converter(pdf_bytes)
+    converter = Converter(BytesIO(pdf_bytes))
     converter.convert(output)
     converter.close()
     output.seek(0)
-    return output.getvalue()  # Return Word file content
+    return output.getvalue()
 
 # Function to process files from a ZIP
 def process_zip_file(zip_file):
@@ -38,7 +37,7 @@ def process_zip_file(zip_file):
                 if os.path.isdir(folder_path):
                     files_in_folder = [file for file in os.listdir(folder_path) if file.endswith('.docx') or file.endswith('.pdf')]
                     
-                    if len(files_in_folder) > 2:  # Assuming you allow one Word and one PDF document per folder
+                    if len(files_in_folder) > 2:
                         st.error(f"More than two documents found in the folder '{folder}'. Only the first Word and first PDF documents will be processed.")
                         error_occurred = True
                     
@@ -46,7 +45,7 @@ def process_zip_file(zip_file):
                         file_path = os.path.join(folder_path, file)
                         with open(file_path, 'rb') as f:
                             if file.endswith('.pdf'):
-                                processed_docs.append(convert_pdf_to_word(f))
+                                processed_docs.append(convert_pdf_to_word(f.read()))
                             else:
                                 processed_docs.append(f.read())
 
@@ -62,6 +61,9 @@ def process_files(files):
             processed_docs.append(file.getvalue())
     return processed_docs
 
+# Initialize session state variables
+if 'combined_document' not in st.session_state:
+    st.session_state['combined_document'] = None
 
 # Streamlit UI
 st.title('Word Document Combiner')
@@ -79,7 +81,7 @@ if upload_choice == 'Zip File':
 elif upload_choice == 'Word Files':
     uploaded_files = st.file_uploader("Upload Word files", accept_multiple_files=True, type=['docx'])
     if st.button('Combine Word Documents') and uploaded_files:
-        word_docs = process_word_files(uploaded_files)
+        word_docs = process_files(uploaded_files)
         st.session_state['combined_document'] = combine_word_documents(word_docs)
 
 # Export options
@@ -98,8 +100,7 @@ if st.session_state['combined_document']:
                                file_name="combined_document.docx",
                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
         elif export_format == "PDF":
-            # PDF conversion logic here (Windows only with docx2pdf)
-            # For cross-platform, use an alternative method
+            # PDF conversion logic here (note: actual implementation depends on your environment)
             pass
         elif export_format == "Text":
             text_stream = BytesIO()
@@ -110,6 +111,7 @@ if st.session_state['combined_document']:
                                data=text_stream,
                                file_name="combined_document.txt",
                                mime="text/plain")
+
 st.markdown("""
 
 ## **How to Use the App**
