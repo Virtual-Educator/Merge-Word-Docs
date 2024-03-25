@@ -4,6 +4,7 @@ from zipfile import ZipFile
 import os
 import tempfile
 from io import BytesIO
+from pdf2docx import Converter
 
 # Function to combine Word documents
 def combine_word_documents(docs):
@@ -14,37 +15,53 @@ def combine_word_documents(docs):
             combined_doc.element.body.append(element)
     return combined_doc
 
-# Function to process Word files from a ZIP
+# Function to convert PDF to Word document
+def convert_pdf_to_word(pdf_bytes):
+    # Convert PDF bytes to a Word file
+    output = BytesIO()
+    converter = Converter(pdf_bytes)
+    converter.convert(output)
+    converter.close()
+    output.seek(0)
+    return output.getvalue()  # Return Word file content
+
+# Function to process files from a ZIP
 def process_zip_file(zip_file):
     with ZipFile(zip_file, 'r') as z:
         with tempfile.TemporaryDirectory() as tempdir:
             z.extractall(tempdir)
-            word_docs = []
+            processed_docs = []
             error_occurred = False
 
             for folder in os.listdir(tempdir):
                 folder_path = os.path.join(tempdir, folder)
                 if os.path.isdir(folder_path):
-                    docs_in_folder = [file for file in os.listdir(folder_path) if file.endswith('.docx')]
+                    files_in_folder = [file for file in os.listdir(folder_path) if file.endswith('.docx') or file.endswith('.pdf')]
                     
-                    if len(docs_in_folder) > 1:
-                        st.error(f"More than one Word document found in the folder '{folder}'. Only the first document will be processed.")
+                    if len(files_in_folder) > 2:  # Assuming you allow one Word and one PDF document per folder
+                        st.error(f"More than two documents found in the folder '{folder}'. Only the first Word and first PDF documents will be processed.")
                         error_occurred = True
                     
-                    if docs_in_folder:
-                        file_path = os.path.join(folder_path, docs_in_folder[0])
+                    for file in files_in_folder:
+                        file_path = os.path.join(folder_path, file)
                         with open(file_path, 'rb') as f:
-                            word_docs.append(f.read())
+                            if file.endswith('.pdf'):
+                                processed_docs.append(convert_pdf_to_word(f))
+                            else:
+                                processed_docs.append(f.read())
 
-            return word_docs, error_occurred
+            return processed_docs, error_occurred
 
-# Function to process direct Word file uploads
-def process_word_files(word_files):
-    return [file.getvalue() for file in word_files]
+# Function to process direct file uploads
+def process_files(files):
+    processed_docs = []
+    for file in files:
+        if file.type == 'application/pdf':
+            processed_docs.append(convert_pdf_to_word(file.getvalue()))
+        else:
+            processed_docs.append(file.getvalue())
+    return processed_docs
 
-# Initialize session state variables
-if 'combined_document' not in st.session_state:
-    st.session_state['combined_document'] = None
 
 # Streamlit UI
 st.title('Word Document Combiner')
