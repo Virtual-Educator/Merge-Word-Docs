@@ -17,12 +17,20 @@ def combine_word_documents(docs):
 
 # Function to convert PDF to Word document
 def convert_pdf_to_word(pdf_bytes):
-    output = BytesIO()
-    converter = Converter(BytesIO(pdf_bytes))
-    converter.convert(output)
-    converter.close()
-    output.seek(0)
-    return output.getvalue()
+    # Create a temporary file to write PDF bytes
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
+        temp_pdf.write(pdf_bytes)
+        temp_pdf.flush()  # Ensure all data is written
+
+        # Convert the PDF file to a Word file using its path
+        output = BytesIO()
+        converter = Converter(temp_pdf.name)
+        converter.convert(output)
+        converter.close()
+
+        # Return the content of the converted Word file
+        output.seek(0)
+        return output.getvalue()
 
 # Function to process files from a ZIP
 def process_zip_file(zip_file):
