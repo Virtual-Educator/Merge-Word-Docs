@@ -17,18 +17,15 @@ def combine_word_documents(docs):
 
 # Function to convert PDF to Word document
 def convert_pdf_to_word(pdf_bytes):
-    # Create a temporary file to write PDF bytes
     with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
         temp_pdf.write(pdf_bytes)
-        temp_pdf.flush()  # Ensure all data is written
+        temp_pdf.flush()
 
-        # Convert the PDF file to a Word file using its path
         output = BytesIO()
         converter = Converter(temp_pdf.name)
         converter.convert(output)
         converter.close()
 
-        # Return the content of the converted Word file
         output.seek(0)
         return output.getvalue()
 
@@ -75,7 +72,7 @@ if 'combined_document' not in st.session_state:
 
 # Streamlit UI
 st.title('Word Document Combiner')
-st.markdown("""Word Document Combiner is an easy-to-use tool that helps you merge multiple Microsoft Word documents into one. Whether you have a bunch of chapters, sections, or separate documents that you want to put together, this app makes it simple.""")
+st.markdown("Word Document Combiner is an easy-to-use tool to merge multiple Word documents into one.")
 
 upload_choice = st.radio("Choose your upload method", ('Zip File', 'Word Files'))
 
@@ -86,7 +83,7 @@ if upload_choice == 'Zip File':
         if word_docs and not error_occurred:
             st.session_state['combined_document'] = combine_word_documents(word_docs)
 
-elif upload_choice was 'Word Files':
+elif upload_choice == 'Word Files':
     uploaded_files = st.file_uploader("Upload Word files", accept_multiple_files=True, type=['docx'])
     if st.button('Combine Word Documents') and uploaded_files:
         word_docs = process_files(uploaded_files)
@@ -109,7 +106,7 @@ if st.session_state['combined_document']:
                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
         elif export_format == "PDF":
-            # PDF conversion logic here (requires additional packages and handling)
+            # PDF conversion logic here
             pass
 
         elif export_format == "Text":
@@ -121,7 +118,6 @@ if st.session_state['combined_document']:
                                data=text_stream,
                                file_name="combined_document.txt",
                                mime="text/plain")
-
 
 
 st.markdown("""
