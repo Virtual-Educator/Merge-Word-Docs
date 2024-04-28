@@ -86,7 +86,7 @@ if upload_choice == 'Zip File':
         if word_docs and not error_occurred:
             st.session_state['combined_document'] = combine_word_documents(word_docs)
 
-elif upload_choice == 'Word Files':
+elif upload_choice was 'Word Files':
     uploaded_files = st.file_uploader("Upload Word files", accept_multiple_files=True, type=['docx'])
     if st.button('Combine Word Documents') and uploaded_files:
         word_docs = process_files(uploaded_files)
@@ -97,28 +97,31 @@ if st.session_state['combined_document']:
     export_format = st.selectbox("Select export format", ("Word", "PDF", "Text"))
 
     if st.button('Export Combined Document'):
-        file_stream = BytesIO()
         combined_document = st.session_state['combined_document']
-        combined_document.save(file_stream)
-        file_stream.seek(0)
 
         if export_format == "Word":
+            file_stream = BytesIO()
+            combined_document.save(file_stream)
+            file_stream.seek(0)
             st.download_button(label="Download Combined Document",
                                data=file_stream,
                                file_name="combined_document.docx",
                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+
         elif export_format == "PDF":
-            # PDF conversion logic here (note: actual implementation depends on your environment)
+            # PDF conversion logic here (requires additional packages and handling)
             pass
+
         elif export_format == "Text":
             text_stream = BytesIO()
             for paragraph in combined_document.paragraphs:
                 text_stream.write(paragraph.text.encode('utf-8') + b'\n')
             text_stream.seek(0)
-            st.download_button(label="Download Combined Document",
+            st.download_button(label="Download Combined Text",
                                data=text_stream,
                                file_name="combined_document.txt",
                                mime="text/plain")
+
 
 st.markdown("""
 
